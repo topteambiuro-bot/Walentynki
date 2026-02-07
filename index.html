@@ -1,390 +1,383 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Walentynki 💖</title>
-<style>
-* { box-sizing: border-box; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Niespodzianka ✨</title>
+    <style>
+        /* STYLE OGÓLNE I TŁO KRZYŻÓWKI */
+        body {
+            background-color: #eeb0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px 10px;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
 
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #ffe6e6;
-    padding: 20px 10px;
-    overflow-x: hidden;
-}
+        /* ANIMOWANE SERDUSZKA W TLE KRZYŻÓWKI */
+        .bg-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
 
-/* HASŁO */
-#passwordOverlay {
-    position: fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background: rgba(255,230,230,0.98);
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    z-index:2000;
-}
-#passwordOverlay input {
-    padding: 12px;
-    font-size: 18px;
-    border-radius: 10px;
-    border: 2px solid #ff4d6d;
-    margin-bottom: 10px;
-}
-#passwordOverlay button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background:#ff4d6d;
-    color:white;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-}
+        /* STYLE KRZYŻÓWKI */
+        #crossword-part {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            z-index: 1;
+        }
 
-/* SERDUSZKA */
-.hearts {
-    position: relative;
-    width: 100%;
-    height: 120px;
-    overflow: hidden;
-}
-.heart {
-    position: absolute;
-    bottom: -40px;
-    width: 20px;
-    height: 20px;
-    background-color: #ff4d6d;
-    transform: rotate(-45deg);
-    animation: floatUp linear infinite;
-}
-.heart:before, .heart:after {
-    content: "";
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: #ff4d6d;
-    border-radius: 50%;
-}
-.heart:before { top: -10px; left: 0; }
-.heart:after { left: 10px; top: 0; }
-@keyframes floatUp { to { transform: translateY(-220px) rotate(-45deg); opacity: 0; } }
+        .grid-container {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
 
-h1 { font-size: 26px; margin: 10px 0; }
-p { font-size: 18px; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(9, clamp(30px, 9vw, 45px));
+            gap: 4px;
+        }
 
-/* BUTTONY */
-.question-container { margin-top: 20px; position: relative; }
-button {
-    padding: 14px 20px;
-    margin: 10px;
-    font-size: 16px;
-    border-radius: 14px;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-.yes-btn { background: #ff4d6d; color: white; display: block; margin-left:auto; margin-right:auto; }
-.no-btn { background: #ccc; }
+        .cell {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border: 1.5px solid #333;
+            text-align: center;
+            font-size: clamp(16px, 5vw, 22px);
+            font-weight: bold;
+            text-transform: uppercase;
+            outline: none;
+            border-radius: 4px;
+            background: white;
+        }
 
-/* NIESPODZIANKI */
-.surprises { display: none; }
+        .empty { border: none; background: none; pointer-events: none; }
+        .highlight-marta { border-color: #9c27b0; background-color: #f3e5f5; }
+        .correct { background-color: #c8e6c9 !important; border-color: #4caf50 !important; color: #2e7d32; }
+        .correct-marta { background-color: #2e7d32 !important; border-color: #1b5e20 !important; color: white !important; }
+        .prefilled { background-color: #eee; color: #555; }
 
-/* PREZENT */
-.gift {
-    width: 100px;
-    height: 100px;
-    margin: 30px auto;
-    background: #ff4d6d;
-    position: relative;
-    animation: shake 1s infinite;
-}
-.gift::before, .gift::after { content: ""; position: absolute; background: white; }
-.gift::before { width: 100%; height: 16px; top: 42px; }
-.gift::after { width: 16px; height: 100%; left: 42px; }
-@keyframes shake {
-    0%,100% { transform: rotate(0); }
-    25% { transform: rotate(2deg); }
-    50% { transform: rotate(-2deg); }
-}
-.open { transform: scale(0); opacity: 0; transition: 1s; }
+        #success-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin: 25px 0;
+        }
 
-/* TEKST KOŃCOWY */
-.final-text { font-size: 20px; color: #ff4d6d; padding: 10px; }
+        #success-message {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2e7d32;
+            background: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
 
-/* ODLICZANIE */
-.countdown { font-size: 22px; color: #ff4d6d; margin-top: 15px; }
+        .next-btn {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            box-shadow: 0 6px 20px rgba(255, 64, 129, 0.5);
+            animation: bounce 2s infinite;
+            cursor: pointer;
+        }
 
-/* KONFETTI */
-.confetti {
-    position: fixed;
-    width: 8px;
-    height: 8px;
-    top: -10px;
-    animation: fall linear forwards;
-}
-@keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
 
-/* PODPOWIEDŹ */
-.hint-overlay {
-    position: fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background: rgba(255,230,230,0.95);
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    font-size:20px;
-    z-index:1000;
-}
-.hint-bar {
-    width:80%;
-    height:10px;
-    background:#ccc;
-    margin-top:20px;
-    border-radius:5px;
-    overflow:hidden;
-}
-.hint-progress {
-    width:0%;
-    height:100%;
-    background:#ff4d6d;
-    animation: progress 5s linear forwards;
-}
-@keyframes progress { to { width:100%; } }
+        .clues { margin-top: 20px; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 10px; width: 90%; max-width: 500px; }
+        
+        /* STYLE TWOJEGO KODU WALENTYNKOWEGO */
+        #valentine-part { display: none; width: 100%; text-align: center; }
+        .v-body { background-color: #ffe6e6; }
+        #passwordOverlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(255,230,230,0.98); display:flex;
+            flex-direction:column; justify-content:center; align-items:center; z-index:2000;
+        }
+        #passwordOverlay input { padding: 12px; font-size: 18px; border-radius: 10px; border: 2px solid #ff4d6d; margin-bottom: 5px; }
+        #passwordOverlay button { padding: 10px 20px; font-size: 16px; background:#ff4d6d; color:white; border:none; border-radius:10px; cursor:pointer; }
+        .hint-text { font-size: 12px; color: #666; margin-bottom: 10px; }
+        
+        .hearts { position: relative; width: 100%; height: 120px; overflow: hidden; }
+        .heart { position: absolute; bottom: -40px; width: 20px; height: 20px; background-color: #ff4d6d; transform: rotate(-45deg); animation: floatUp linear infinite; opacity: 0.6; }
+        .heart:before, .heart:after { content: ""; position: absolute; width: 20px; height: 20px; background-color: #ff4d6d; border-radius: 50%; }
+        .heart:before { top: -10px; left: 0; } .heart:after { left: 10px; top: 0; }
+        @keyframes floatUp { to { transform: translateY(-300px) rotate(-45deg); opacity: 0; } }
 
-/* IKONA APARATU */
-.camera-icon {
-    font-size:60px;
-    animation: pulse 1s infinite alternate;
-}
-@keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.3); } }
-
-</style>
+        .question-container { margin-top: 20px; position: relative; }
+        .yes-btn { background: #ff4d6d; color: white; padding:14px 20px; border-radius:14px; border:none; cursor:pointer; display: block; margin: 10px auto; }
+        .no-btn { background: #ccc; padding:14px 20px; border-radius:14px; border:none; cursor:pointer; }
+        .surprises { display: none; }
+        .final-text { font-size: 20px; color: #ff4d6d; padding: 10px; }
+        .countdown { font-size: 22px; color: #ff4d6d; margin-top: 15px; }
+        .confetti-v { position: fixed; width: 8px; height: 8px; top: -10px; animation: fallV linear forwards; }
+        @keyframes fallV { to { transform: translateY(100vh) rotate(360deg); } }
+        .hint-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(255,230,230,0.95); display:flex; flex-direction:column; justify-content:center; align-items:center; font-size:20px; z-index:3000; }
+        .hint-bar { width:80%; height:10px; background:#ccc; margin-top:20px; border-radius:5px; overflow:hidden; }
+        .hint-progress { width:0%; height:100%; background:#ff4d6d; animation: progress 5s linear forwards; }
+        @keyframes progress { to { width:100%; } }
+        .camera-icon { font-size:60px; animation: pulse 1s infinite alternate; }
+        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.3); } }
+        .surprise-btn { padding: 14px 20px; margin: 10px; font-size: 16px; border-radius: 14px; border: none; cursor: pointer; background: #ff4d6d; color: white; }
+    </style>
 </head>
-
 <body>
 
-<!-- EKRAN HASŁA -->
-<div id="passwordOverlay">
-    <h2>Wpisz hasło, aby rozpocząć 💖</h2>
-    <input type="password" id="passwordInput" placeholder="Hasło">
-    <button id="passwordBtn">Potwierdź</button>
-    <p id="passwordMsg" style="color:red; display:none;">❌ Niepoprawne hasło</p>
+<div class="bg-hearts" id="bgHearts"></div>
+
+<div id="crossword-part">
+    <h2>Pierwszy Etap : zdobądź hasło ✨</h2>
+    <div class="grid-container">
+        <div class="grid">
+            <div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div>
+            <input class="cell highlight-marta" maxlength="1" data-ans="M" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="A" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="R" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="Z" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="E" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="C" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="R" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="Y" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="B" inputmode="text">
+            <input class="cell highlight-marta" maxlength="1" data-ans="A" inputmode="text">
+            <div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div>
+            <div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div>
+            <input class="cell highlight-marta" maxlength="1" data-ans="R" inputmode="text">
+            <input class="cell prefilled" value="A" readonly data-ans="A">
+            <input class="cell" maxlength="1" data-ans="M" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="E" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="N" inputmode="text">
+            <div class="cell empty"></div>
+            <div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div>
+            <input class="cell highlight-marta" maxlength="1" data-ans="T" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="R" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="E" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="S" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="N" inputmode="text">
+            <input class="cell prefilled" value="A" readonly data-ans="A">
+            <input class="cell" maxlength="1" data-ans="I" inputmode="text">
+            <input class="cell prefilled" value="S" readonly data-ans="S">
+            <input class="cell" maxlength="1" data-ans="L" inputmode="text">
+            <input class="cell highlight-marta" maxlength="1" data-ans="A" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="N" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="D" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="I" inputmode="text">
+            <input class="cell" maxlength="1" data-ans="A" inputmode="text">
+            <div class="cell empty"></div>
+        </div>
+    </div>
+    <div id="success-container">
+        <div id="success-message">🏆 Super hasło już masz! 🏆</div>
+        <button id="openSecondLink" class="next-btn">Otwórz drugi link :)</button>
+    </div>
+    <div class="clues">
+        <ol>
+            <li>Miesiąc twoich urodzin i moich ;)</li>
+            <li>Coś z czego się kiedyś napiłem z restauracji</li>
+            <li>Chińska zupa która lubisz?</li>
+            <li>Gdzie zgubiła się twoja bransoletka?</li>
+            <li>Gdzie chciałbym na wakacje?</li>
+        </ol>
+    </div>
 </div>
 
-<div class="hearts" id="heartsTop"></div>
-
-<h1>💖 Walentynki 💖</h1>
-
-<div class="question-container" id="questionBox">
-    <p>Czy zostaniesz moją walentynką?</p>
-    <button class="yes-btn" id="yesBtn">Tak</button>
-    <button class="no-btn" id="noBtn">Nie</button>
+<div id="valentine-part">
+    <div id="passwordOverlay">
+        <h2>Wpisz hasło, aby rozpocząć 💖</h2>
+        <input type="password" id="passwordInput" placeholder="Hasło">
+        <div class="hint-text">(Podpowiedź: pierwsza litera musi być duża)</div>
+        <button id="passwordBtn">Potwierdź</button>
+        <p id="passwordMsg" style="color:red; display:none;">❌ Niepoprawne hasło</p>
+    </div>
+    <div class="hearts" id="heartsTop"></div>
+    <h1>💖 Walentynki 💖</h1>
+    <div class="question-container" id="questionBox">
+        <p>Czy zostaniesz moją walentynką?</p>
+        <button class="yes-btn" id="yesBtn">Tak</button>
+        <button class="no-btn" id="noBtn">Nie</button>
+    </div>
+    <div class="surprises" id="surprises">
+        <h2>Wybierz niespodziankę 🎁</h2>
+        <button class="surprise-btn" id="surprise1">🎁 Niespodzianka 1</button>
+        <button class="surprise-btn" id="surprise2">🎁 Niespodzianka 2</button>
+    </div>
+    <div id="giftContainer"></div>
+    <div class="hearts" id="heartsBottom"></div>
 </div>
-
-<div class="surprises" id="surprises">
-    <h2>Wybierz niespodziankę 🎁</h2>
-    <button class="surprise-btn" id="surprise1">🎁 Niespodzianka 1</button>
-    <button class="surprise-btn" id="surprise2">🎁 Niespodzianka 2</button>
-</div>
-
-<div id="giftContainer"></div>
-
-<div class="hearts" id="heartsBottom"></div>
 
 <script>
-let scale=1,noClick=0,noOffset=0;
-const yesBtn=document.getElementById("yesBtn");
-const noBtn=document.getElementById("noBtn");
-const surprises=document.getElementById("surprises");
-const giftContainer=document.getElementById("giftContainer");
-
-const noTexts=[
-    "Nie tak łatwo 💖","Oj nie 😏","Jeszcze raz 😘","Prawie!","Nie uciekniesz 😍","Spróbuj ponownie 💘"
-];
-
-/* HASŁO */
-const passwordOverlay=document.getElementById("passwordOverlay");
-const passwordInput=document.getElementById("passwordInput");
-const passwordBtn=document.getElementById("passwordBtn");
-const passwordMsg=document.getElementById("passwordMsg");
-
-passwordBtn.addEventListener("click",()=>{
-    if(passwordInput.value === "Marta"){
-        passwordOverlay.style.display="none";
-    } else {
-        passwordMsg.style.display="block";
+    /* ANIMACJA SERDUSZEK W TLE */
+    function createBgHeart() {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = (Math.random() * 3 + 3) + "s";
+        heart.style.width = "15px";
+        heart.style.height = "15px";
+        document.getElementById("bgHearts").appendChild(heart);
+        setTimeout(() => heart.remove(), 6000);
     }
-});
-passwordInput.addEventListener("keyup",(e)=>{
-    if(e.key==="Enter"){
-        passwordBtn.click();
+    setInterval(createBgHeart, 400);
+
+    /* LOGIKA KRZYŻÓWKI */
+    const inputs = document.querySelectorAll('input.cell');
+    const successContainer = document.getElementById('success-container');
+    const openSecondLink = document.getElementById('openSecondLink');
+    const crosswordPart = document.getElementById('crossword-part');
+    const valentinePart = document.getElementById('valentine-part');
+
+    function checkWin() {
+        const allCorrect = Array.from(inputs).every(input => input.value.toUpperCase().trim() === input.getAttribute('data-ans'));
+        if (allCorrect) {
+            successContainer.style.display = 'flex';
+            document.activeElement.blur();
+        }
     }
-});
 
-/* NIE */
-noBtn.addEventListener("click",()=>{
-    noClick++;
-    scale+=0.3;
-    yesBtn.style.transform=`scale(${scale})`;
-    noBtn.textContent=noTexts[Math.min(noClick,noTexts.length-1)];
-    noOffset+=50;
-    noBtn.style.transform=`translateX(${noOffset}px)`;
-    if(noOffset>window.innerWidth) noBtn.style.display="none";
-});
+    inputs.forEach((input, index) => {
+        if(input.readOnly) input.classList.add(input.classList.contains('highlight-marta') ? 'correct-marta' : 'correct');
+        input.addEventListener('input', (e) => {
+            const val = e.target.value.toUpperCase().trim();
+            e.target.value = val;
+            if (val === e.target.getAttribute('data-ans')) {
+                e.target.classList.add(e.target.classList.contains('highlight-marta') ? 'correct-marta' : 'correct');
+                if (index < inputs.length - 1) inputs[index + 1].focus();
+            } else { e.target.classList.remove('correct', 'correct-marta'); }
+            checkWin();
+        });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === "Backspace" && input.value === "" && index > 0) inputs[index-1].focus();
+        });
+    });
 
-/* TAK */
-yesBtn.addEventListener("click",()=>{
-    document.getElementById("questionBox").style.display="none";
-    surprises.style.display="block";
-});
+    openSecondLink.addEventListener('click', () => {
+        crosswordPart.style.display = 'none';
+        valentinePart.style.display = 'block';
+        document.body.style.backgroundColor = "#ffe6e6";
+    });
 
-/* PODPOWIEDŹ */
-function createHint(showContent,callback){
-    const overlay=document.createElement("div");
-    overlay.className="hint-overlay";
-    showContent(overlay);
-    const bar=document.createElement("div");
-    bar.className="hint-bar";
-    const progress=document.createElement("div");
-    progress.className="hint-progress";
-    bar.appendChild(progress);
-    overlay.appendChild(bar);
-    document.body.appendChild(overlay);
-    setTimeout(()=>{
-        overlay.remove();
-        callback();
-    },5000);
-}
+    /* TWOJA LOGIKA WALENTYNKOWA */
+    let scale=1,noClick=0,noOffset=0;
+    const yesBtn=document.getElementById("yesBtn");
+    const noBtn=document.getElementById("noBtn");
+    const surprises=document.getElementById("surprises");
+    const giftContainer=document.getElementById("giftContainer");
+    const noTexts=["Nie tak łatwo 💖","Oj nie 😏","Jeszcze raz 😘","Prawie!","Nie uciekniesz 😍","Spróbuj ponownie 💘"];
 
-/* FUNKCJA ROMANTYCZNY FINALS */
-function romanticFinal(){
-    giftContainer.innerHTML=`
-        <div class="final-text" style="font-size:24px;">💖 Hurra! Niech ten dzień będzie magiczny! 💖</div>
-    `;
-    confetti();
-}
+    const passwordOverlay=document.getElementById("passwordOverlay");
+    const passwordInput=document.getElementById("passwordInput");
+    const passwordBtn=document.getElementById("passwordBtn");
+    const passwordMsg=document.getElementById("passwordMsg");
 
-/* NIESPODZIANKA 1 */
-const surprise1=document.getElementById("surprise1");
-surprise1.addEventListener("click",()=>{
-    surprises.style.display="none";
-    if(navigator.vibrate) navigator.vibrate([200,100,200]);
+    passwordBtn.addEventListener("click",()=>{
+        if(passwordInput.value === "Marta"){ passwordOverlay.style.display="none"; } 
+        else { passwordMsg.style.display="block"; }
+    });
 
-    giftContainer.innerHTML=`
-        <div class="final-text">Super to mamy wybrane! 💖</div>
-        <button class="surprise-btn" id="hintBtn">Czy chcesz podpowiedź?</button>
-    `;
-    
-    document.getElementById("hintBtn").addEventListener("click",()=>{
-        createHint((overlay)=>{
-            const camera=document.createElement("div");
-            camera.className="camera-icon";
-            camera.textContent="📸";
-            overlay.appendChild(camera);
-        },()=>{
-            giftContainer.innerHTML=`
-                <div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div>
-                <button class="surprise-btn" id="acceptBtn">Akceptuj zaproszenie 💌</button>
-                <button class="surprise-btn" id="back1">Możesz też dobrać drugą niespodziankę ;)</button>
-                <div class="countdown" id="countdown"></div>
-            `;
-            startCountdown();
+    noBtn.addEventListener("click",()=>{
+        noClick++; scale+=0.3;
+        yesBtn.style.transform=`scale(${scale})`;
+        noBtn.textContent=noTexts[Math.min(noClick,noTexts.length-1)];
+        noOffset+=50;
+        noBtn.style.transform=`translateX(${noOffset}px)`;
+        if(noOffset>window.innerWidth) noBtn.style.display="none";
+    });
 
-            document.getElementById("acceptBtn").addEventListener("click", romanticFinal);
+    yesBtn.addEventListener("click",()=>{
+        document.getElementById("questionBox").style.display="none";
+        surprises.style.display="block";
+    });
 
-            document.getElementById("back1").addEventListener("click",()=>{
-                giftContainer.innerHTML="";
-                surprises.style.display="block";
+    function createHint(showContent,callback){
+        const overlay=document.createElement("div");
+        overlay.className="hint-overlay";
+        showContent(overlay);
+        const bar=document.createElement("div");
+        bar.className="hint-bar";
+        const progress=document.createElement("div");
+        progress.className="hint-progress";
+        bar.appendChild(progress);
+        overlay.appendChild(bar);
+        document.body.appendChild(overlay);
+        setTimeout(()=>{ overlay.remove(); callback(); },5000);
+    }
+
+    function romanticFinal(){
+        giftContainer.innerHTML=`<div class="final-text" style="font-size:24px;">💖 Hurra! Niech ten dzień będzie magiczny! 💖</div>`;
+        confettiV();
+    }
+
+    document.getElementById("surprise1").addEventListener("click",()=>{
+        surprises.style.display="none";
+        giftContainer.innerHTML=`<div class="final-text">Super to mamy wybrane! 💖</div><button class="surprise-btn" id="hintBtn">Czy chcesz podpowiedź?</button>`;
+        document.getElementById("hintBtn").addEventListener("click",()=>{
+            createHint((overlay)=>{
+                const camera=document.createElement("div");
+                camera.className="camera-icon"; camera.textContent="📸";
+                overlay.appendChild(camera);
+            },()=>{
+                giftContainer.innerHTML=`<div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div><button class="surprise-btn" id="acceptBtn">Akceptuj zaproszenie 💌</button><button class="surprise-btn" id="back1">Możesz też dobrać drugą niespodziankę ;)</button><div class="countdown" id="countdown"></div>`;
+                startCountdown();
+                document.getElementById("acceptBtn").addEventListener("click", romanticFinal);
+                document.getElementById("back1").addEventListener("click",()=>{ giftContainer.innerHTML=""; surprises.style.display="block"; });
             });
         });
     });
-});
 
-/* NIESPODZIANKA 2 */
-const surprise2=document.getElementById("surprise2");
-surprise2.addEventListener("click",()=>{
-    surprises.style.display="none";
-    if(navigator.vibrate) navigator.vibrate([200,100,200]);
-
-    createHint((overlay)=>{
-        overlay.innerHTML+="<div>📍 Ładowanie podpowiedzi...</div>";
-    },()=>{
-        giftContainer.innerHTML=`
-            <div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div>
-            <div style="margin:20px auto; width:90%; max-width:500px; height:300px;">
-                <iframe
-                    width="100%"
-                    height="100%"
-                    style="border:0"
-                    loading="lazy"
-                    allowfullscreen
-                    referrerpolicy="no-referrer-when-downgrade"
-                    src="https://www.google.com/maps?q=50.398462,18.913361&hl=pl&z=15&output=embed">
-                </iframe>
-            </div>
-            <button class="surprise-btn" id="acceptBtn2">Akceptuj zaproszenie 💌</button>
-            <button class="surprise-btn" id="back2">Możesz też dobrać drugą niespodziankę ;)</button>
-            <div class="countdown" id="countdown"></div>
-        `;
-        startCountdown();
-
-        document.getElementById("acceptBtn2").addEventListener("click", romanticFinal);
-
-        document.getElementById("back2").addEventListener("click",()=>{
-            giftContainer.innerHTML="";
-            surprises.style.display="block";
+    document.getElementById("surprise2").addEventListener("click",()=>{
+        surprises.style.display="none";
+        createHint((overlay)=>{ overlay.innerHTML+="<div>📍 Ładowanie podpowiedzi...</div>"; },()=>{
+            giftContainer.innerHTML=`<div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div><div style="margin:20px auto; width:90%; max-width:500px; height:300px;"><iframe width="100%" height="100%" style="border:0" loading="lazy" src="https://www.google.com/maps/embed?pb=YOUR_EMBED_LINK_HERE" allowfullscreen></iframe></div><button class="surprise-btn" id="acceptBtn2">Akceptuj zaproszenie 💌</button><button class="surprise-btn" id="back2">Możesz też dobrać drugą niespodziankę ;)</button><div class="countdown" id="countdown"></div>`;
+            startCountdown();
+            document.getElementById("acceptBtn2").addEventListener("click", romanticFinal);
+            document.getElementById("back2").addEventListener("click",()=>{ giftContainer.innerHTML=""; surprises.style.display="block"; });
         });
     });
-});
 
-/* ODLICZANIE */
-function startCountdown(){
-    const valentine=new Date(new Date().getFullYear(),1,14);
-    setInterval(()=>{
-        const now=new Date();
-        const diff=valentine-now;
-        if(diff<=0){ document.getElementById("countdown").textContent="💘 To dziś! 💘"; return; }
-        const d=Math.floor(diff/(1000*60*60*24));
-        const h=Math.floor(diff/(1000*60*60)%24);
-        const m=Math.floor(diff/(1000*60)%60);
-        const s=Math.floor(diff/1000%60);
-        document.getElementById("countdown").textContent=`${d} dni ${h}h ${m}m ${s}s`;
-    },1000);
-}
-
-/* SERDUSZKA */
-function heartsLoop(id){
-    setInterval(()=>{
-        const h=document.createElement("div");
-        h.className="heart";
-        h.style.left=Math.random()*window.innerWidth+"px";
-        h.style.animationDuration=(Math.random()*3+2)+"s";
-        document.getElementById(id).appendChild(h);
-        setTimeout(()=>h.remove(),5000);
-    },250);
-}
-heartsLoop("heartsTop");
-heartsLoop("heartsBottom");
-
-/* KONFETTI */
-function confetti(){
-    for(let i=0;i<100;i++){
-        const c=document.createElement("div");
-        c.className="confetti";
-        c.style.left=Math.random()*window.innerWidth+"px";
-        c.style.background=`hsl(${Math.random()*360},100%,50%)`;
-        c.style.animationDuration=(Math.random()*3+2)+"s";
-        document.body.appendChild(c);
-        setTimeout(()=>c.remove(),5000);
+    function startCountdown(){
+        const valentine=new Date(new Date().getFullYear(),1,14);
+        setInterval(()=>{
+            const now=new Date(); const diff=valentine-now;
+            if(diff<=0){ document.getElementById("countdown").textContent="💘 To dziś! 💘"; return; }
+            const d=Math.floor(diff/(1000*60*60*24)), h=Math.floor(diff/(1000*60*60)%24), m=Math.floor(diff/(1000*60)%60), s=Math.floor(diff/1000%60);
+            document.getElementById("countdown").textContent=`${d} dni ${h}h ${m}m ${s}s`;
+        },1000);
     }
-}
-</script>
 
+    function confettiV(){
+        for(let i=0;i<100;i++){
+            const c=document.createElement("div"); c.className="confetti-v";
+            c.style.left=Math.random()*window.innerWidth+"px";
+            c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+            c.style.animationDuration=(Math.random()*3+2)+"s";
+            document.body.appendChild(c);
+            setTimeout(()=>c.remove(),5000);
+        }
+    }
+</script>
 </body>
 </html>
-
