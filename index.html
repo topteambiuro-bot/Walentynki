@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Niespodzianka ✨</title>
     <style>
-        /* TŁO I OGÓLNE */
+        /* STYLE KRZYŻÓWKI */
         body {
             background-color: #eeb0f0;
             display: flex;
@@ -16,9 +16,9 @@
             padding: 20px 10px;
             min-height: 100vh;
             overflow-x: hidden;
-            position: relative;
         }
 
+        /* ANIMOWANE SERDUSZKA W TLE KRZYŻÓWKI */
         .bg-hearts {
             position: fixed;
             top: 0;
@@ -27,15 +27,6 @@
             height: 100%;
             pointer-events: none;
             z-index: -1;
-        }
-
-        /* KRZYŻÓWKA */
-        #crossword-part {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            z-index: 1;
         }
 
         .grid-container {
@@ -75,6 +66,18 @@
             flex-direction: column;
             align-items: center;
             margin: 25px 0;
+            z-index: 1000;
+        }
+
+        #success-message {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2e7d32;
+            background: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         .next-btn {
@@ -96,10 +99,11 @@
             60% {transform: translateY(-5px);}
         }
 
-        .clues { margin-top: 20px; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 10px; width: 90%; max-width: 500px; }
+        .clues { margin-top: 20px; background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; width: 90%; max-width: 500px; }
         
-        /* CZĘŚĆ WALENTYNKOWA */
-        #valentine-part { display: none; width: 100%; text-align: center; }
+        /* STYLE TWOJEGO KODU WALENTYNKOWEGO */
+        #valentine-part { display: none; width: 100%; }
+        .v-body { background-color: #ffe6e6; text-align: center; }
         #passwordOverlay {
             position: fixed; top:0; left:0; width:100%; height:100%;
             background: rgba(255,230,230,0.98); display:flex;
@@ -107,24 +111,28 @@
         }
         #passwordOverlay input { padding: 12px; font-size: 18px; border-radius: 10px; border: 2px solid #ff4d6d; margin-bottom: 5px; }
         #passwordOverlay button { padding: 10px 20px; font-size: 16px; background:#ff4d6d; color:white; border:none; border-radius:10px; cursor:pointer; }
+        .hint-text { font-size: 12px; color: #666; margin-bottom: 10px; }
         
-        .heart { position: absolute; bottom: -40px; width: 20px; height: 20px; background-color: #ff4d6d; transform: rotate(-45deg); animation: floatUp linear infinite; opacity: 0.6; }
+        .hearts { position: relative; width: 100%; height: 120px; overflow: hidden; }
+        .heart { position: absolute; bottom: -40px; width: 20px; height: 20px; background-color: #ff4d6d; transform: rotate(-45deg); animation: floatUp linear infinite; }
         .heart:before, .heart:after { content: ""; position: absolute; width: 20px; height: 20px; background-color: #ff4d6d; border-radius: 50%; }
         .heart:before { top: -10px; left: 0; } .heart:after { left: 10px; top: 0; }
-        @keyframes floatUp { to { transform: translateY(-400px) rotate(-45deg); opacity: 0; } }
-
-        .yes-btn { background: #ff4d6d; color: white; padding:14px 20px; border-radius:14px; border:none; cursor:pointer; display: block; margin: 10px auto; }
-        .no-btn { background: #ccc; padding:14px 20px; border-radius:14px; border:none; cursor:pointer; }
+        @keyframes floatUp { to { transform: translateY(-220px) rotate(-45deg); opacity: 0; } }
+        .question-container { margin-top: 20px; position: relative; }
+        .yes-btn { background: #ff4d6d; color: white; display: block; margin-left:auto; margin-right:auto; }
+        .no-btn { background: #ccc; }
         .surprises { display: none; }
-        .final-text { font-size: 20px; color: #ff4d6d; padding: 10px; font-weight: bold; }
+        .final-text { font-size: 20px; color: #ff4d6d; padding: 10px; }
         .countdown { font-size: 22px; color: #ff4d6d; margin-top: 15px; }
-        
-        .hint-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(255,230,230,0.95); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:3000; }
+        .confetti-v { position: fixed; width: 8px; height: 8px; top: -10px; animation: fallV linear forwards; }
+        @keyframes fallV { to { transform: translateY(100vh) rotate(360deg); } }
+        .hint-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(255,230,230,0.95); display:flex; flex-direction:column; justify-content:center; align-items:center; font-size:20px; z-index:3000; }
         .hint-bar { width:80%; height:10px; background:#ccc; margin-top:20px; border-radius:5px; overflow:hidden; }
         .hint-progress { width:0%; height:100%; background:#ff4d6d; animation: progress 5s linear forwards; }
         @keyframes progress { to { width:100%; } }
-        
-        .surprise-btn { padding: 14px 20px; margin: 10px; font-size: 16px; border-radius: 14px; border: none; cursor: pointer; background: #ff4d6d; color: white; font-weight: bold; }
+        .camera-icon { font-size:60px; animation: pulse 1s infinite alternate; }
+        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.3); } }
+        .surprise-btn { padding: 14px 20px; margin: 10px; font-size: 16px; border-radius: 14px; border: none; cursor: pointer; background: #ff4d6d; color: white; }
     </style>
 </head>
 <body>
@@ -132,7 +140,7 @@
 <div class="bg-hearts" id="bgHearts"></div>
 
 <div id="crossword-part">
-    <h2 style="color: white; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">Zdobądź hasło do niespodzianki ✨</h2>
+    <h2>Pierwszy Etap : zdobądź hasło ✨</h2>
     <div class="grid-container">
         <div class="grid">
             <div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div>
@@ -173,8 +181,8 @@
         </div>
     </div>
     <div id="success-container">
-        <h3 style="color: #2e7d32;">Hasło odblokowane! 🏆</h3>
-        <button id="openSecondLink" class="next-btn">Dalej ❤️</button>
+        <div id="success-message">🏆 Super hasło już masz! 🏆</div>
+        <button id="openSecondLink" class="next-btn">Otwórz drugi link :)</button>
     </div>
     <div class="clues">
         <ol>
@@ -187,55 +195,55 @@
     </div>
 </div>
 
-<div id="valentine-part">
+<div id="valentine-part" class="v-body">
     <div id="passwordOverlay">
-        <h2>Wpisz hasło ✨</h2>
-        <input type="text" id="passwordInput" placeholder="Hasło z krzyżówki">
-        <button id="passwordBtn">Sprawdź</button>
-        <p id="passwordMsg" style="color:red; display:none;">Spróbuj jeszcze raz! 😘</p>
+        <h2>Wpisz hasło, aby rozpocząć 💖</h2>
+        <input type="password" id="passwordInput" placeholder="Hasło">
+        <div class="hint-text">(Podpowiedź: pierwsza litera musi być duża)</div>
+        <button id="passwordBtn">Potwierdź</button>
+        <p id="passwordMsg" style="color:red; display:none;">❌ Niepoprawne hasło</p>
     </div>
-    <h1 style="color: #ff4d6d;">💖 Walentynka dla Marty 💖</h1>
-    <div id="questionBox">
-        <p style="font-size: 1.2rem;">Czy zostaniesz moją walentynką?</p>
-        <button class="yes-btn" id="yesBtn">TAK!</button>
-        <button class="no-btn" id="noBtn">Nie</button>
+    <div class="hearts" id="heartsTop"></div>
+    <h1>💖 Walentynki 💖</h1>
+    <div class="question-container" id="questionBox">
+        <p>Czy zostaniesz moją walentynką?</p>
+        <button class="yes-btn" id="yesBtn" style="padding:14px 20px; border-radius:14px; border:none; cursor:pointer;">Tak</button>
+        <button class="no-btn" id="noBtn" style="padding:14px 20px; border-radius:14px; border:none; cursor:pointer;">Nie</button>
     </div>
     <div class="surprises" id="surprises">
         <h2>Wybierz niespodziankę 🎁</h2>
-        <button class="surprise-btn" id="surprise1">🎁 Opcja 1</button>
-        <button class="surprise-btn" id="surprise2">🎁 Opcja 2</button>
+        <button class="surprise-btn" id="surprise1">🎁 Niespodzianka 1</button>
+        <button class="surprise-btn" id="surprise2">🎁 Niespodzianka 2</button>
     </div>
     <div id="giftContainer"></div>
+    <div class="hearts" id="heartsBottom"></div>
 </div>
 
 <script>
-    // ANIMACJA SERDUSZEK W TLE
+    /* ANIMACJA SERDUSZEK DLA KRZYŻÓWKI */
     function createBgHeart() {
-        const heart = document.createElement("div");
-        heart.className = "heart";
-        heart.style.left = Math.random() * 100 + "vw";
-        heart.style.animationDuration = (Math.random() * 3 + 2) + "s";
-        document.getElementById("bgHearts").appendChild(heart);
-        setTimeout(() => heart.remove(), 5000);
+        const h = document.createElement("div"); h.className = "heart";
+        h.style.left = Math.random() * 100 + "vw";
+        h.style.animationDuration = (Math.random() * 3 + 3) + "s";
+        h.style.width = "15px"; h.style.height = "15px";
+        document.getElementById("bgHearts").appendChild(h);
+        setTimeout(() => h.remove(), 6000);
     }
-    setInterval(createBgHeart, 300);
+    setInterval(createBgHeart, 400);
 
+    /* LOGIKA KRZYŻÓWKI */
     const inputs = document.querySelectorAll('input.cell');
     const successContainer = document.getElementById('success-container');
-    const openSecondLink = document.getElementById('openSecondLink');
     const crosswordPart = document.getElementById('crossword-part');
     const valentinePart = document.getElementById('valentine-part');
 
     function checkWin() {
         const allCorrect = Array.from(inputs).every(input => input.value.toUpperCase().trim() === input.getAttribute('data-ans'));
-        if (allCorrect) {
-            successContainer.style.display = 'flex';
-            document.activeElement.blur();
-        }
+        if (allCorrect) { successContainer.style.display = 'flex'; document.activeElement.blur(); }
     }
 
     inputs.forEach((input, index) => {
-        if(input.readOnly) input.classList.add('correct');
+        if(input.readOnly) input.classList.add(input.classList.contains('highlight-marta') ? 'correct-marta' : 'correct');
         input.addEventListener('input', (e) => {
             const val = e.target.value.toUpperCase().trim();
             e.target.value = val;
@@ -247,34 +255,37 @@
         });
     });
 
-    openSecondLink.addEventListener('click', () => {
+    document.getElementById('openSecondLink').addEventListener('click', () => {
         crosswordPart.style.display = 'none';
         valentinePart.style.display = 'block';
         document.body.style.backgroundColor = "#ffe6e6";
     });
 
-    // WALENTYNKI
-    let scale=1, noOffset=0;
+    /* TWOJA LOGIKA WALENTYNKOWA */
+    let scale=1,noClick=0,noOffset=0;
     const yesBtn=document.getElementById("yesBtn");
     const noBtn=document.getElementById("noBtn");
     const surprises=document.getElementById("surprises");
     const giftContainer=document.getElementById("giftContainer");
-    const passwordOverlay=document.getElementById("passwordOverlay");
+    const noTexts=["Nie tak łatwo 💖","Oj nie 😏","Jeszcze raz 😘","Prawie!","Nie uciekniesz 😍","Spróbuj ponownie 💘"];
 
-    document.getElementById("passwordBtn").addEventListener("click",()=>{
-        if(document.getElementById("passwordInput").value.toUpperCase() === "MARTA"){
-            passwordOverlay.style.display="none";
-        } else {
-            document.getElementById("passwordMsg").style.display="block";
-        }
+    const passwordOverlay=document.getElementById("passwordOverlay");
+    const passwordInput=document.getElementById("passwordInput");
+    const passwordBtn=document.getElementById("passwordBtn");
+    const passwordMsg=document.getElementById("passwordMsg");
+
+    passwordBtn.addEventListener("click",()=>{
+        if(passwordInput.value === "Marta"){ passwordOverlay.style.display="none"; } 
+        else { passwordMsg.style.display="block"; }
     });
 
     noBtn.addEventListener("click",()=>{
-        scale+=0.4;
+        noClick++; scale+=0.3;
         yesBtn.style.transform=`scale(${scale})`;
-        noOffset+=60;
+        noBtn.textContent=noTexts[Math.min(noClick,noTexts.length-1)];
+        noOffset+=50;
         noBtn.style.transform=`translateX(${noOffset}px)`;
-        if(noOffset > window.innerWidth / 2) noBtn.style.display="none";
+        if(noOffset>window.innerWidth) noBtn.style.display="none";
     });
 
     yesBtn.addEventListener("click",()=>{
@@ -282,52 +293,91 @@
         surprises.style.display="block";
     });
 
-    function createHint(content, callback){
-        const overlay = document.createElement("div");
-        overlay.className = "hint-overlay";
-        overlay.innerHTML = content + '<div class="hint-bar"><div class="hint-progress"></div></div>';
+    function createHint(showContent,callback){
+        const overlay=document.createElement("div");
+        overlay.className="hint-overlay";
+        showContent(overlay);
+        const bar=document.createElement("div");
+        bar.className="hint-bar";
+        const progress=document.createElement("div");
+        progress.className="hint-progress";
+        bar.appendChild(progress);
+        overlay.appendChild(bar);
         document.body.appendChild(overlay);
-        setTimeout(() => { overlay.remove(); callback(); }, 5000);
+        setTimeout(()=>{ overlay.remove(); callback(); },5000);
+    }
+
+    function romanticFinal(){
+        giftContainer.innerHTML=`<div class="final-text" style="font-size:24px;">💖 Hurra! Niech ten dzień będzie magiczny! 💖</div>`;
+        confettiV();
     }
 
     document.getElementById("surprise1").addEventListener("click",()=>{
         surprises.style.display="none";
-        createHint("<h3>Przygotuj się na... 📸</h3>", ()=>{
-            giftContainer.innerHTML = '<div class="final-text">Jesteśmy umówieni! 😘</div><div class="countdown" id="cd"></div>';
-            startCountdown();
+        giftContainer.innerHTML=`<div class="final-text">Super to mamy wybrane! 💖</div><button class="surprise-btn" id="hintBtn">Czy chcesz podpowiedź?</button>`;
+        document.getElementById("hintBtn").addEventListener("click",()=>{
+            createHint((overlay)=>{
+                const camera=document.createElement("div");
+                camera.className="camera-icon"; camera.textContent="📸";
+                overlay.appendChild(camera);
+            },()=>{
+                giftContainer.innerHTML=`<div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div><button class="surprise-btn" id="acceptBtn">Akceptuj zaproszenie 💌</button><button class="surprise-btn" id="back1">Możesz też dobrać drugą niespodziankę ;)</button><div class="countdown" id="countdown"></div>`;
+                startCountdown();
+                document.getElementById("acceptBtn").addEventListener("click", romanticFinal);
+                document.getElementById("back1").addEventListener("click",()=>{ giftContainer.innerHTML=""; surprises.style.display="block"; });
+            });
         });
     });
 
     document.getElementById("surprise2").addEventListener("click",()=>{
         surprises.style.display="none";
-        createHint("<h3>Lokalizacja niespodzianki... 📍</h3>", ()=>{
-            // TUTAJ POPRAWIONA MAPA NA KOORDYNATY
-            giftContainer.innerHTML = `
-                <div class="final-text">Widzimy się tutaj! 💖</div>
-                <div style="width:100%; max-width:400px; height:300px; margin: 15px auto;">
-                    <iframe width="100%" height="100%" frameborder="0" style="border:0; border-radius: 10px;" 
-                        src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d2545.45423456789!2d18.913239!3d50.398322!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNTDCsDIzJzU0LjAiTiAxOMKwNTQnNDcuNyJF!5e0!3m2!1spl!2spl!4v1700000000000">
-                    </iframe>
-                    <br>
-                    <a href="https://www.google.com/maps/search/?api=1&query=50.398322,18.913239" target="_blank" 
-                       style="display:inline-block; margin-top:10px; color:#ff4d6d; text-decoration:none; font-weight:bold;">
-                       📍 Kliknij, aby otworzyć nawigację
-                    </a>
-                </div>
-                <div class="countdown" id="cd"></div>
-            `;
+        createHint((overlay)=>{ overlay.innerHTML+="<div>📍 Ładowanie podpowiedzi...</div>"; },()=>{
+            giftContainer.innerHTML=`<div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div>
+            <div style="margin:20px auto; width:90%; max-width:500px; height:300px;">
+                <iframe width="100%" height="100%" style="border:0; border-radius:10px;" loading="lazy" 
+                src="https://www.google.com/maps/embed/v1/place?key=AIzaSyA_TWÓJ_KLUCZ_NIEPOTRZEBNY_TU&q=50.398322,18.913239"></iframe>
+                <br>
+                <a href="https://www.google.com/maps/search/?api=1&query=50.398322,18.913239" target="_blank" style="color:#ff4d6d; text-decoration:none; font-weight:bold;">📍 Otwórz w Google Maps</a>
+            </div>
+            <button class="surprise-btn" id="acceptBtn2">Akceptuj zaproszenie 💌</button>
+            <button class="surprise-btn" id="back2">Możesz też dobrać drugą niespodziankę ;)</button>
+            <div class="countdown" id="countdown"></div>`;
             startCountdown();
+            document.getElementById("acceptBtn2").addEventListener("click", romanticFinal);
+            document.getElementById("back2").addEventListener("click",()=>{ giftContainer.innerHTML=""; surprises.style.display="block"; });
         });
     });
 
     function startCountdown(){
-        const target=new Date(new Date().getFullYear(),1,14);
+        const valentine=new Date(new Date().getFullYear(),1,14);
         setInterval(()=>{
-            const diff=target - new Date();
-            if(diff<=0) { document.getElementById("cd").textContent="To dziś! 💘"; return; }
+            const now=new Date(); const diff=valentine-now;
+            if(diff<=0){ document.getElementById("countdown").textContent="💘 To dziś! 💘"; return; }
             const d=Math.floor(diff/(1000*60*60*24)), h=Math.floor(diff/(1000*60*60)%24), m=Math.floor(diff/(1000*60)%60), s=Math.floor(diff/1000%60);
-            document.getElementById("cd").textContent = `${d}d ${h}h ${m}m ${s}s`;
+            document.getElementById("countdown").textContent=`${d} dni ${h}h ${m}m ${s}s`;
         },1000);
+    }
+
+    function heartsLoop(id){
+        setInterval(()=>{
+            const h=document.createElement("div"); h.className="heart";
+            h.style.left=Math.random()*window.innerWidth+"px";
+            h.style.animationDuration=(Math.random()*3+2)+"s";
+            document.getElementById(id).appendChild(h);
+            setTimeout(()=>h.remove(),5000);
+        },250);
+    }
+    heartsLoop("heartsTop"); heartsLoop("heartsBottom");
+
+    function confettiV(){
+        for(let i=0;i<100;i++){
+            const c=document.createElement("div"); c.className="confetti-v";
+            c.style.left=Math.random()*window.innerWidth+"px";
+            c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+            c.style.animationDuration=(Math.random()*3+2)+"s";
+            document.body.appendChild(c);
+            setTimeout(()=>c.remove(),5000);
+        }
     }
 </script>
 </body>
