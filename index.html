@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Niespodzianka ✨</title>
     <style>
-        /* STYLE KRZYŻÓWKI */
+        /* STYLE OGÓLNE I TŁO KRZYŻÓWKI */
         body {
             background-color: #eeb0f0;
             display: flex;
@@ -16,6 +16,7 @@
             padding: 20px 10px;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
         }
 
         /* ANIMOWANE SERDUSZKA W TLE KRZYŻÓWKI */
@@ -27,6 +28,15 @@
             height: 100%;
             pointer-events: none;
             z-index: -1;
+        }
+
+        /* STYLE KRZYŻÓWKI */
+        #crossword-part {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            z-index: 1;
         }
 
         .grid-container {
@@ -66,7 +76,6 @@
             flex-direction: column;
             align-items: center;
             margin: 25px 0;
-            z-index: 1000;
         }
 
         #success-message {
@@ -99,11 +108,11 @@
             60% {transform: translateY(-5px);}
         }
 
-        .clues { margin-top: 20px; background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; width: 90%; max-width: 500px; }
+        .clues { margin-top: 20px; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 10px; width: 90%; max-width: 500px; }
         
-        /* STYLE TWOJEGO KODU WALENTYNKOWEGO */
-        #valentine-part { display: none; width: 100%; }
-        .v-body { background-color: #ffe6e6; text-align: center; }
+        /* STYLE CZĘŚCI WALENTYNKOWEJ */
+        #valentine-part { display: none; width: 100%; text-align: center; }
+        .v-body { background-color: #ffe6e6; }
         #passwordOverlay {
             position: fixed; top:0; left:0; width:100%; height:100%;
             background: rgba(255,230,230,0.98); display:flex;
@@ -114,13 +123,14 @@
         .hint-text { font-size: 12px; color: #666; margin-bottom: 10px; }
         
         .hearts { position: relative; width: 100%; height: 120px; overflow: hidden; }
-        .heart { position: absolute; bottom: -40px; width: 20px; height: 20px; background-color: #ff4d6d; transform: rotate(-45deg); animation: floatUp linear infinite; }
+        .heart { position: absolute; bottom: -40px; width: 20px; height: 20px; background-color: #ff4d6d; transform: rotate(-45deg); animation: floatUp linear infinite; opacity: 0.6; }
         .heart:before, .heart:after { content: ""; position: absolute; width: 20px; height: 20px; background-color: #ff4d6d; border-radius: 50%; }
         .heart:before { top: -10px; left: 0; } .heart:after { left: 10px; top: 0; }
-        @keyframes floatUp { to { transform: translateY(-220px) rotate(-45deg); opacity: 0; } }
+        @keyframes floatUp { to { transform: translateY(-300px) rotate(-45deg); opacity: 0; } }
+
         .question-container { margin-top: 20px; position: relative; }
-        .yes-btn { background: #ff4d6d; color: white; display: block; margin-left:auto; margin-right:auto; }
-        .no-btn { background: #ccc; }
+        .yes-btn { background: #ff4d6d; color: white; padding:14px 20px; border-radius:14px; border:none; cursor:pointer; display: block; margin: 10px auto; }
+        .no-btn { background: #ccc; padding:14px 20px; border-radius:14px; border:none; cursor:pointer; }
         .surprises { display: none; }
         .final-text { font-size: 20px; color: #ff4d6d; padding: 10px; }
         .countdown { font-size: 22px; color: #ff4d6d; margin-top: 15px; }
@@ -195,7 +205,7 @@
     </div>
 </div>
 
-<div id="valentine-part" class="v-body">
+<div id="valentine-part">
     <div id="passwordOverlay">
         <h2>Wpisz hasło, aby rozpocząć 💖</h2>
         <input type="password" id="passwordInput" placeholder="Hasło">
@@ -207,8 +217,8 @@
     <h1>💖 Walentynki 💖</h1>
     <div class="question-container" id="questionBox">
         <p>Czy zostaniesz moją walentynką?</p>
-        <button class="yes-btn" id="yesBtn" style="padding:14px 20px; border-radius:14px; border:none; cursor:pointer;">Tak</button>
-        <button class="no-btn" id="noBtn" style="padding:14px 20px; border-radius:14px; border:none; cursor:pointer;">Nie</button>
+        <button class="yes-btn" id="yesBtn">Tak</button>
+        <button class="no-btn" id="noBtn">Nie</button>
     </div>
     <div class="surprises" id="surprises">
         <h2>Wybierz niespodziankę 🎁</h2>
@@ -220,26 +230,30 @@
 </div>
 
 <script>
-    /* ANIMACJA SERDUSZEK DLA KRZYŻÓWKI */
     function createBgHeart() {
-        const h = document.createElement("div"); h.className = "heart";
-        h.style.left = Math.random() * 100 + "vw";
-        h.style.animationDuration = (Math.random() * 3 + 3) + "s";
-        h.style.width = "15px"; h.style.height = "15px";
-        document.getElementById("bgHearts").appendChild(h);
-        setTimeout(() => h.remove(), 6000);
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = (Math.random() * 3 + 3) + "s";
+        heart.style.width = "15px";
+        heart.style.height = "15px";
+        document.getElementById("bgHearts").appendChild(heart);
+        setTimeout(() => heart.remove(), 6000);
     }
     setInterval(createBgHeart, 400);
 
-    /* LOGIKA KRZYŻÓWKI */
     const inputs = document.querySelectorAll('input.cell');
     const successContainer = document.getElementById('success-container');
+    const openSecondLink = document.getElementById('openSecondLink');
     const crosswordPart = document.getElementById('crossword-part');
     const valentinePart = document.getElementById('valentine-part');
 
     function checkWin() {
         const allCorrect = Array.from(inputs).every(input => input.value.toUpperCase().trim() === input.getAttribute('data-ans'));
-        if (allCorrect) { successContainer.style.display = 'flex'; document.activeElement.blur(); }
+        if (allCorrect) {
+            successContainer.style.display = 'flex';
+            document.activeElement.blur();
+        }
     }
 
     inputs.forEach((input, index) => {
@@ -255,20 +269,17 @@
         });
     });
 
-    document.getElementById('openSecondLink').addEventListener('click', () => {
+    openSecondLink.addEventListener('click', () => {
         crosswordPart.style.display = 'none';
         valentinePart.style.display = 'block';
         document.body.style.backgroundColor = "#ffe6e6";
     });
 
-    /* TWOJA LOGIKA WALENTYNKOWA */
     let scale=1,noClick=0,noOffset=0;
     const yesBtn=document.getElementById("yesBtn");
     const noBtn=document.getElementById("noBtn");
     const surprises=document.getElementById("surprises");
     const giftContainer=document.getElementById("giftContainer");
-    const noTexts=["Nie tak łatwo 💖","Oj nie 😏","Jeszcze raz 😘","Prawie!","Nie uciekniesz 😍","Spróbuj ponownie 💘"];
-
     const passwordOverlay=document.getElementById("passwordOverlay");
     const passwordInput=document.getElementById("passwordInput");
     const passwordBtn=document.getElementById("passwordBtn");
@@ -282,7 +293,6 @@
     noBtn.addEventListener("click",()=>{
         noClick++; scale+=0.3;
         yesBtn.style.transform=`scale(${scale})`;
-        noBtn.textContent=noTexts[Math.min(noClick,noTexts.length-1)];
         noOffset+=50;
         noBtn.style.transform=`translateX(${noOffset}px)`;
         if(noOffset>window.innerWidth) noBtn.style.display="none";
@@ -307,11 +317,6 @@
         setTimeout(()=>{ overlay.remove(); callback(); },5000);
     }
 
-    function romanticFinal(){
-        giftContainer.innerHTML=`<div class="final-text" style="font-size:24px;">💖 Hurra! Niech ten dzień będzie magiczny! 💖</div>`;
-        confettiV();
-    }
-
     document.getElementById("surprise1").addEventListener("click",()=>{
         surprises.style.display="none";
         giftContainer.innerHTML=`<div class="final-text">Super to mamy wybrane! 💖</div><button class="surprise-btn" id="hintBtn">Czy chcesz podpowiedź?</button>`;
@@ -321,10 +326,9 @@
                 camera.className="camera-icon"; camera.textContent="📸";
                 overlay.appendChild(camera);
             },()=>{
-                giftContainer.innerHTML=`<div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div><button class="surprise-btn" id="acceptBtn">Akceptuj zaproszenie 💌</button><button class="surprise-btn" id="back1">Możesz też dobrać drugą niespodziankę ;)</button><div class="countdown" id="countdown"></div>`;
+                giftContainer.innerHTML=`<div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div><button class="surprise-btn" id="acceptBtn">Akceptuj zaproszenie 💌</button><div class="countdown" id="countdown"></div>`;
                 startCountdown();
-                document.getElementById("acceptBtn").addEventListener("click", romanticFinal);
-                document.getElementById("back1").addEventListener("click",()=>{ giftContainer.innerHTML=""; surprises.style.display="block"; });
+                document.getElementById("acceptBtn").addEventListener("click", ()=>confettiV());
             });
         });
     });
@@ -332,19 +336,9 @@
     document.getElementById("surprise2").addEventListener("click",()=>{
         surprises.style.display="none";
         createHint((overlay)=>{ overlay.innerHTML+="<div>📍 Ładowanie podpowiedzi...</div>"; },()=>{
-            giftContainer.innerHTML=`<div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div>
-            <div style="margin:20px auto; width:90%; max-width:500px; height:300px;">
-                <iframe width="100%" height="100%" style="border:0; border-radius:10px;" loading="lazy" 
-                src="https://www.google.com/maps/embed/v1/place?key=AIzaSyA_TWÓJ_KLUCZ_NIEPOTRZEBNY_TU&q=50.398322,18.913239"></iframe>
-                <br>
-                <a href="https://www.google.com/maps/search/?api=1&query=50.398322,18.913239" target="_blank" style="color:#ff4d6d; text-decoration:none; font-weight:bold;">📍 Otwórz w Google Maps</a>
-            </div>
-            <button class="surprise-btn" id="acceptBtn2">Akceptuj zaproszenie 💌</button>
-            <button class="surprise-btn" id="back2">Możesz też dobrać drugą niespodziankę ;)</button>
-            <div class="countdown" id="countdown"></div>`;
+            giftContainer.innerHTML=`<div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div><div style="margin:20px auto; width:90%; max-width:500px; height:300px;"><iframe width="100%" height="100%" style="border:0" loading="lazy" src="https://www.google.com/maps/embed/v1/place?key=TWOJ_KLUCZ_API&q=ul.+Miarki+5,41-922+Radzionków" allowfullscreen></iframe><br><a href="https://www.google.com/maps/search/?api=1&query=ul.+Miarki+5,+41-922+Radzionków" target="_blank" style="color: #ff4d6d; text-decoration: none; font-weight: bold;">Otwórz w Google Maps 📍</a></div><button class="surprise-btn" id="acceptBtn2">Akceptuj zaproszenie 💌</button><div class="countdown" id="countdown"></div>`;
             startCountdown();
-            document.getElementById("acceptBtn2").addEventListener("click", romanticFinal);
-            document.getElementById("back2").addEventListener("click",()=>{ giftContainer.innerHTML=""; surprises.style.display="block"; });
+            document.getElementById("acceptBtn2").addEventListener("click", ()=>confettiV());
         });
     });
 
@@ -358,17 +352,6 @@
         },1000);
     }
 
-    function heartsLoop(id){
-        setInterval(()=>{
-            const h=document.createElement("div"); h.className="heart";
-            h.style.left=Math.random()*window.innerWidth+"px";
-            h.style.animationDuration=(Math.random()*3+2)+"s";
-            document.getElementById(id).appendChild(h);
-            setTimeout(()=>h.remove(),5000);
-        },250);
-    }
-    heartsLoop("heartsTop"); heartsLoop("heartsBottom");
-
     function confettiV(){
         for(let i=0;i<100;i++){
             const c=document.createElement("div"); c.className="confetti-v";
@@ -378,6 +361,7 @@
             document.body.appendChild(c);
             setTimeout(()=>c.remove(),5000);
         }
+        alert("💖 Zaproszenie zaakceptowane! 💖");
     }
 </script>
 </body>
