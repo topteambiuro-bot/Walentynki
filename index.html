@@ -253,11 +253,12 @@
     });
 
     document.getElementById('openSecondLink').addEventListener('click', () => {
-        clearInterval(crosswordHeartInterval); // ZATRZYMANIE ANIMACJI KRZYŻÓWKI
-        document.getElementById("bgHearts").innerHTML = ""; // USUNIĘCIE SERDUSZEK Z TŁA
+        clearInterval(crosswordHeartInterval);
+        document.getElementById("bgHearts").innerHTML = "";
         crosswordPart.style.display = 'none';
         valentinePart.style.display = 'block';
         document.body.style.backgroundColor = "#ffe6e6";
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // POPRAWKA: Przewiń do góry
     });
 
     /* TWOJA LOGIKA WALENTYNKOWA */
@@ -274,7 +275,10 @@
     const passwordMsg=document.getElementById("passwordMsg");
 
     passwordBtn.addEventListener("click",()=>{
-        if(passwordInput.value === "Marta"){ passwordOverlay.style.display="none"; } 
+        if(passwordInput.value === "Marta"){ 
+            passwordOverlay.style.display="none";
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // POPRAWKA: Przewiń do góry po wpisaniu hasła
+        } 
         else { passwordMsg.style.display="block"; }
     });
 
@@ -334,7 +338,7 @@
             giftContainer.innerHTML=`<div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div>
             <div style="margin:20px auto; width:90%; max-width:500px; height:300px;">
                 <iframe width="100%" height="100%" style="border:0; border-radius:10px;" loading="lazy" 
-                src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d2545.485108603681!2d18.910663976652796!3d50.39832200000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNTDCsDIzJzU0LjAiTiAxOMKwNTQnNDcuNyJF!5e0!3m2!1spl!2spl!4v1707500000000!5m2!1spl!2spl"></iframe>
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2545.452601934988!2d18.910664076865225!3d50.39832197158145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTDCsDIzJzU0LjAiTiAxOMKwNTQnNDYuMiJF!5e0!3m2!1spl!2spl!4v1700000000000!5m2!1spl!2spl"></iframe>
                 <br>
                 <a href="https://www.google.com/maps?q=50.398322,18.913239" target="_blank" style="color:#ff4d6d; text-decoration:none; font-weight:bold;">📍 Otwórz w Google Maps</a>
             </div>
