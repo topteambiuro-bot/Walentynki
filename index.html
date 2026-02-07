@@ -18,7 +18,6 @@
             overflow-x: hidden;
         }
 
-        /* ANIMOWANE SERDUSZKA W TLE KRZYŻÓWKI */
         .bg-hearts {
             position: fixed;
             top: 0;
@@ -101,7 +100,6 @@
 
         .clues { margin-top: 20px; background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; width: 90%; max-width: 500px; }
         
-        /* STYLE TWOJEGO KODU WALENTYNKOWEGO */
         #valentine-part { display: none; width: 100%; }
         .v-body { background-color: #ffe6e6; text-align: center; }
         #passwordOverlay {
@@ -221,15 +219,14 @@
 
 <script>
     /* ANIMACJA SERDUSZEK DLA KRZYŻÓWKI */
-    function createBgHeart() {
+    let crosswordHeartInterval = setInterval(() => {
         const h = document.createElement("div"); h.className = "heart";
         h.style.left = Math.random() * 100 + "vw";
         h.style.animationDuration = (Math.random() * 3 + 3) + "s";
         h.style.width = "15px"; h.style.height = "15px";
         document.getElementById("bgHearts").appendChild(h);
         setTimeout(() => h.remove(), 6000);
-    }
-    setInterval(createBgHeart, 400);
+    }, 400);
 
     /* LOGIKA KRZYŻÓWKI */
     const inputs = document.querySelectorAll('input.cell');
@@ -256,6 +253,8 @@
     });
 
     document.getElementById('openSecondLink').addEventListener('click', () => {
+        clearInterval(crosswordHeartInterval); // ZATRZYMANIE ANIMACJI KRZYŻÓWKI
+        document.getElementById("bgHearts").innerHTML = ""; // USUNIĘCIE SERDUSZEK Z TŁA
         crosswordPart.style.display = 'none';
         valentinePart.style.display = 'block';
         document.body.style.backgroundColor = "#ffe6e6";
@@ -304,7 +303,7 @@
         bar.appendChild(progress);
         overlay.appendChild(bar);
         document.body.appendChild(overlay);
-        setTimeout(()=>{ overlay.remove(); callback(); },5000);
+        setTimeout(()=>{ overlay.remove(); callback(); }, 5000);
     }
 
     function romanticFinal(){
@@ -335,7 +334,7 @@
             giftContainer.innerHTML=`<div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div>
             <div style="margin:20px auto; width:90%; max-width:500px; height:300px;">
                 <iframe width="100%" height="100%" style="border:0; border-radius:10px;" loading="lazy" 
-                src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d1!2d18.913239!3d50.398322!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNTDCsDIzJzU0LjAiTiAxOMKwNTQnNDcuNyJF!5e0!3m2!1spl!2spl!4v1700000000000!5m2!1spl!2spl"></iframe>
+                src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d2545.485108603681!2d18.910663976652796!3d50.39832200000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNTDCsDIzJzU0LjAiTiAxOMKwNTQnNDcuNyJF!5e0!3m2!1spl!2spl!4v1707500000000!5m2!1spl!2spl"></iframe>
                 <br>
                 <a href="https://www.google.com/maps?q=50.398322,18.913239" target="_blank" style="color:#ff4d6d; text-decoration:none; font-weight:bold;">📍 Otwórz w Google Maps</a>
             </div>
