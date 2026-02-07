@@ -110,7 +110,7 @@
 
         .clues { margin-top: 20px; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 10px; width: 90%; max-width: 500px; }
         
-        /* STYLE TWOJEGO KODU WALENTYNKOWEGO */
+        /* STYLE CZĘŚCI WALENTYNKOWEJ */
         #valentine-part { display: none; width: 100%; text-align: center; }
         .v-body { background-color: #ffe6e6; }
         #passwordOverlay {
@@ -230,7 +230,6 @@
 </div>
 
 <script>
-    /* ANIMACJA SERDUSZEK W TLE */
     function createBgHeart() {
         const heart = document.createElement("div");
         heart.className = "heart";
@@ -243,7 +242,6 @@
     }
     setInterval(createBgHeart, 400);
 
-    /* LOGIKA KRZYŻÓWKI */
     const inputs = document.querySelectorAll('input.cell');
     const successContainer = document.getElementById('success-container');
     const openSecondLink = document.getElementById('openSecondLink');
@@ -269,9 +267,6 @@
             } else { e.target.classList.remove('correct', 'correct-marta'); }
             checkWin();
         });
-        input.addEventListener('keydown', (e) => {
-            if (e.key === "Backspace" && input.value === "" && index > 0) inputs[index-1].focus();
-        });
     });
 
     openSecondLink.addEventListener('click', () => {
@@ -280,14 +275,11 @@
         document.body.style.backgroundColor = "#ffe6e6";
     });
 
-    /* TWOJA LOGIKA WALENTYNKOWA */
     let scale=1,noClick=0,noOffset=0;
     const yesBtn=document.getElementById("yesBtn");
     const noBtn=document.getElementById("noBtn");
     const surprises=document.getElementById("surprises");
     const giftContainer=document.getElementById("giftContainer");
-    const noTexts=["Nie tak łatwo 💖","Oj nie 😏","Jeszcze raz 😘","Prawie!","Nie uciekniesz 😍","Spróbuj ponownie 💘"];
-
     const passwordOverlay=document.getElementById("passwordOverlay");
     const passwordInput=document.getElementById("passwordInput");
     const passwordBtn=document.getElementById("passwordBtn");
@@ -301,7 +293,6 @@
     noBtn.addEventListener("click",()=>{
         noClick++; scale+=0.3;
         yesBtn.style.transform=`scale(${scale})`;
-        noBtn.textContent=noTexts[Math.min(noClick,noTexts.length-1)];
         noOffset+=50;
         noBtn.style.transform=`translateX(${noOffset}px)`;
         if(noOffset>window.innerWidth) noBtn.style.display="none";
@@ -326,11 +317,6 @@
         setTimeout(()=>{ overlay.remove(); callback(); },5000);
     }
 
-    function romanticFinal(){
-        giftContainer.innerHTML=`<div class="final-text" style="font-size:24px;">💖 Hurra! Niech ten dzień będzie magiczny! 💖</div>`;
-        confettiV();
-    }
-
     document.getElementById("surprise1").addEventListener("click",()=>{
         surprises.style.display="none";
         giftContainer.innerHTML=`<div class="final-text">Super to mamy wybrane! 💖</div><button class="surprise-btn" id="hintBtn">Czy chcesz podpowiedź?</button>`;
@@ -340,10 +326,9 @@
                 camera.className="camera-icon"; camera.textContent="📸";
                 overlay.appendChild(camera);
             },()=>{
-                giftContainer.innerHTML=`<div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div><button class="surprise-btn" id="acceptBtn">Akceptuj zaproszenie 💌</button><button class="surprise-btn" id="back1">Możesz też dobrać drugą niespodziankę ;)</button><div class="countdown" id="countdown"></div>`;
+                giftContainer.innerHTML=`<div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div><button class="surprise-btn" id="acceptBtn">Akceptuj zaproszenie 💌</button><div class="countdown" id="countdown"></div>`;
                 startCountdown();
-                document.getElementById("acceptBtn").addEventListener("click", romanticFinal);
-                document.getElementById("back1").addEventListener("click",()=>{ giftContainer.innerHTML=""; surprises.style.display="block"; });
+                document.getElementById("acceptBtn").addEventListener("click", ()=>confettiV());
             });
         });
     });
@@ -351,10 +336,9 @@
     document.getElementById("surprise2").addEventListener("click",()=>{
         surprises.style.display="none";
         createHint((overlay)=>{ overlay.innerHTML+="<div>📍 Ładowanie podpowiedzi...</div>"; },()=>{
-            giftContainer.innerHTML=`<div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div><div style="margin:20px auto; width:90%; max-width:500px; height:300px;"><iframe width="100%" height="100%" style="border:0" loading="lazy" src="https://www.google.com/maps/embed?pb=YOUR_EMBED_LINK_HERE" allowfullscreen></iframe></div><button class="surprise-btn" id="acceptBtn2">Akceptuj zaproszenie 💌</button><button class="surprise-btn" id="back2">Możesz też dobrać drugą niespodziankę ;)</button><div class="countdown" id="countdown"></div>`;
+            giftContainer.innerHTML=`<div class="final-text">💖 Super! Jesteśmy umówieni 😘💖</div><div style="margin:20px auto; width:90%; max-width:500px; height:300px;"><iframe width="100%" height="100%" style="border:0" loading="lazy" src="https://www.google.com/maps/embed/v1/place?key=TWOJ_KLUCZ_API&q=ul.+Miarki+5,41-922+Radzionków" allowfullscreen></iframe><br><a href="https://www.google.com/maps/search/?api=1&query=ul.+Miarki+5,+41-922+Radzionków" target="_blank" style="color: #ff4d6d; text-decoration: none; font-weight: bold;">Otwórz w Google Maps 📍</a></div><button class="surprise-btn" id="acceptBtn2">Akceptuj zaproszenie 💌</button><div class="countdown" id="countdown"></div>`;
             startCountdown();
-            document.getElementById("acceptBtn2").addEventListener("click", romanticFinal);
-            document.getElementById("back2").addEventListener("click",()=>{ giftContainer.innerHTML=""; surprises.style.display="block"; });
+            document.getElementById("acceptBtn2").addEventListener("click", ()=>confettiV());
         });
     });
 
@@ -377,7 +361,9 @@
             document.body.appendChild(c);
             setTimeout(()=>c.remove(),5000);
         }
+        alert("💖 Zaproszenie zaakceptowane! 💖");
     }
 </script>
 </body>
 </html>
+
